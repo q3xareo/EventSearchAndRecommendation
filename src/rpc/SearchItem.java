@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,54 +41,14 @@ public class SearchItem extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		/* test 1: direct print
-		PrintWriter out = response.getWriter();
-		if (request.getParameter("username")!= null) {
-			String username = request.getParameter("username");
-			out.print("Hello " + username);
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
 		}
-		*/
-		/* test 2: html
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<html><body>");
-		out.println("<h1>This is a HTML page</h1>");
-		out.println("</body></html>");
-		out.close();
-		*/
-		
-		/*test 3: JSONObject
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
-		
-		String username = "";
-		if (request.getParameter("username") != null){
-			username = request.getParameter("username");
-		}
-		JSONObject obj = new JSONObject();
-		try{
-			obj.put("username", username);
-		} catch (JSONException e){
-			e.printStackTrace();
-		}
-		out.print(obj);
-		out.close();
-		*/
-		/*test 4: JSONArray
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
 
-		JSONArray array = new JSONArray();
-		try{
-			array.put(new JSONObject().put("username", "abcd"));
-			array.put(new JSONObject().put("username", "1234"));
-		} catch (JSONException e){
-			e.printStackTrace();
-		}
-		out.print(array);
-		out.close();
-		*/
-		String userId = request.getParameter("user_id");
+                             
+		String userId = session.getAttribute("user_id").toString();
 		double lat = Double.parseDouble(request.getParameter("lat"));
 		double lon = Double.parseDouble(request.getParameter("lon"));
 		// Term can be empty or null.

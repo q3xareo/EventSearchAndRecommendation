@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +39,14 @@ public class ItemHistory extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-String userId = request.getParameter("user_id");
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
+
+                             
+		String userId = session.getAttribute("user_id").toString();
 		
 		DBConnection conn = DBConnectionFactory.getConnection();
 		Set<Item> items = conn.getFavoriteItems(userId);
@@ -61,10 +69,16 @@ String userId = request.getParameter("user_id");
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
+
 		 // input format: {“user_id”: “1111”, “favorite”: [“abcd”, “efgh”]}
 		JSONObject input = RpcHelper.readJsonObject(request);
 		try {
-			String userId = input.getString("user_id");
+			String userId = session.getAttribute("user_id").toString();
 			JSONArray favorite = input.getJSONArray("favorite");
 
 			List<String> itemIds = new ArrayList<>();
@@ -86,9 +100,14 @@ String userId = request.getParameter("user_id");
 	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
 		JSONObject input = RpcHelper.readJsonObject(request);
 		try {
-			String userId = input.getString("user_id");
+			String userId = session.getAttribute("user_id").toString();
 			JSONArray favorite = input.getJSONArray("favorite");
 
 			List<String> itemIds = new ArrayList<>();
